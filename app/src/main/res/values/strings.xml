@@ -4,4 +4,5 @@
     <string name="confirm">Confirm</string>
     <string name="flash_on">Flash on</string>
     <string name="flash_off">Flash off</string>
+    <string name="explain_camera_service_permission_for_flash_service">The camera service permission is required to use the camera flash. This app does not use features other than Flash.</string>
 </resources>
