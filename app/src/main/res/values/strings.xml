@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">flashlight</string>
+    <string name="no_flash">No flashes available.</string>
+    <string name="confirm">Confirm</string>
+    <string name="flash_on">Flash on</string>
+    <string name="flash_off">Flash off</string>
 </resources>

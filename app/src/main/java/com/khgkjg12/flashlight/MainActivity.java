@@ -13,38 +13,101 @@ import android.widget.Switch;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Camera mCamera;
+    private Switch mFlashSwitch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Switch flashSwitch = findViewById(R.id.flash_switch);
+        mFlashSwitch = findViewById(R.id.flash_switch);
 
-        if(checkCameraHardware(this)){
-            Camera camera = null;
+        mFlashSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    turnOnFlash();
+                }else{
+                    turnOffFlash();
+                }
+            }
+        });
+    }
+
+    private void turnOnFlash() {
+        if (checkFlash()) {
+            mCamera.getParameters().setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+            syncSwitchWithCamera();
+        } else {
+            onNoFlash(this);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        if (checkCameraHardware(this)) {
             try {
-                camera = Camera.open(); // attempt to get a Camera instance
-            }
-            catch (Exception e){
-                onNoCamera(this);
-            }
-            if(camera!=null){
-                final Camera finalCamera = camera;
-                flashSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(isChecked){
-                            finalCamera.getParameters().setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-                        }else{
-                            finalCamera.getParameters().setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-                        }
+                mCamera = Camera.open(); // attempt to get a Camera instance
+                if(mCamera!=null){
+                    if(checkFlash()){
+                        syncSwitchWithCamera();
+                    }else{
+                        onNoFlash(this);
                     }
-                });
-            }else {
-                onNoCamera(this);
+                }else{
+                    onNoFlash(this);
+                }
+            } catch (Exception e) {
+                onNoFlash(this);
+            }
+        } else {
+            onNoFlash(this);
+        }
+        super.onResume();
+    }
+
+    private void turnOffFlash(){
+        if(checkFlash()) {
+            mCamera.getParameters().setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+            syncSwitchWithCamera();
+        }else{
+            onNoFlash(this);
+        }
+    }
+
+    private boolean checkFlash(){
+        if(mCamera!=null){
+            String flashMode = mCamera.getParameters().getFlashMode();
+            if(flashMode!=null){
+                mCamera.getParameters().setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                return true;
+            }else{
+                return false;
             }
         }else{
-            onNoCamera(this);
+            return false;
+        }
+    }
+
+    private void syncSwitchWithCamera(){
+        if(checkFlash()){
+            String flashMode = mCamera.getParameters().getFlashMode();
+            if(flashMode.equals(Camera.Parameters.FLASH_MODE_ON)){
+                if(!mFlashSwitch.isChecked()) {
+                    mFlashSwitch.setChecked(true);
+                }
+            }else if(flashMode.equals(Camera.Parameters.FLASH_MODE_OFF)){
+                if(mFlashSwitch.isChecked()) {
+                    mFlashSwitch.setChecked(false);
+                }
+            }else{
+                mCamera.getParameters().setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                if(mFlashSwitch.isChecked()) {
+                    mFlashSwitch.setChecked(false);
+                }
+            }
+        }else{
+            onNoFlash(this);
         }
     }
 
@@ -59,13 +122,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void onNoCamera(Context context){
+    private void onNoFlash(Context context){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(R.string.no_camera).setNeutralButton(R.string.confirm, new DialogInterface.OnClickListener() {
+        builder.setMessage(R.string.no_flash).setNeutralButton(R.string.confirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        releaseCamera();
+    }
+
+    private void releaseCamera(){
+        if(mCamera != null){
+            mCamera.release();
+            mCamera = null;
+        }
     }
 }
