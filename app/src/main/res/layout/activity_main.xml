@@ -13,5 +13,10 @@
         android:textOff="@string/flash_off"
         android:checked="false"
         android:id="@+id/flash_switch"/>
+    <SurfaceView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/surface_view"/>
 
 </RelativeLayout>
