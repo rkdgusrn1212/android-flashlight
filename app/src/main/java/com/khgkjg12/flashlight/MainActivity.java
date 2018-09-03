@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     onNoFlash(this);
                 }
             } else {
+                mFlashSwitch.setChecked(false);
                 requestPermissionAndStartFlashService();
             }
         }else{
@@ -124,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     onNoFlash(this);
                 }
             } else {
+                mFlashSwitch.setChecked(true);
                 requestPermissionAndStartFlashService();
             }
         }else{
@@ -168,21 +170,15 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     protected void onPause() {
         super.onPause();
-        releaseCamera();
-    }
-
-    private void releaseCamera(){
-        if(mCamera != null){
-            mCamera.stopPreview();
-            mCamera.release();
-            mCamera = null;
+        if(mFlashSwitch.isChecked()){
+            mFlashSwitch.setChecked(false);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if(requestCode == REQUEST_FOR_START_FLASH_SERVICE){
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            if(grantResults.length==1&&grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 mFlashSwitch.toggle();
             }
         }
