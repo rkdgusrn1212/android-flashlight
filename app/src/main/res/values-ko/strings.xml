@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">손전등</string>
+    <string name="no_flash">사용가능한 플래시가 없습니다.</string>
+    <string name="confirm">확인</string>
+    <string name="flash_on">켜기</string>
+    <string name="flash_off">끄기</string>
+    <string name="explain_camera_service_permission_for_flash_service">카메라 권한은 카메라 플래시를 사용하기 위해 필요합니다. 이 어플리케이션은 플래시 이외의 카메라 기능을 전혀 사용하지 않습니다.</string>
+</resources>
